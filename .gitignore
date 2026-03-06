@@ -1,0 +1,23 @@
+# Environnement
+.env
+.env.local
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+
+# Fichiers uploadés (optionnel : décommenter si trop volumineux)
+# uploads/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.log
