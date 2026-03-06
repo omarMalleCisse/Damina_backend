@@ -36,6 +36,8 @@ else:
         "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://damina-8mwqxw2tp-omarmallecisses-projects.vercel.app",
+        "https://damina.vercel.app",
     ]
 _frontend_url = (os.getenv("FRONTEND_URL") or "").strip().rstrip("/")
 if _frontend_url and _frontend_url not in CORS_ORIGINS:
@@ -58,4 +60,4 @@ PAYTECH_LEGACY = os.getenv("PAYTECH_LEGACY", "true").lower() in ("1", "true", "y
 # URL IPN/webhook en https (obligatoire pour paytech.sn) - ex: https://xxx.ngrok-free.app/api/payments/webhook
 PAYTECH_IPN_URL = (os.getenv("PAYTECH_IPN_URL") or "").strip()
 # URL du frontend pour success_url/cancel_url (PayTech exige des URLs absolues)
-FRONTEND_URL = (os.getenv("FRONTEND_URL") or "http://localhost:3000").strip().rstrip("/")
+FRONTEND_URL = (os.getenv("FRONTEND_URL") or "https://damina-8mwqxw2tp-omarmallecisses-projects.vercel.app").strip().rstrip("/")
