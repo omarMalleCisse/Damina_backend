@@ -63,7 +63,13 @@ def create_app():
 
     @app.on_event("startup")
     def on_startup():
-        create_all_tables()
+        try:
+            create_all_tables()
+        except Exception as e:
+            import logging
+            logging.getLogger("uvicorn.error").warning(
+                "Base de données indisponible au démarrage: %s. Vérifiez DATABASE_URL.", e
+            )
 
     # Inclure les routers
     app.include_router(designs.router)
@@ -99,8 +105,20 @@ def create_app():
         return RedirectResponse(url=f"{base}/payment/cancel?{request.url.query}", status_code=302)
 
     @app.get("/health")
-    def health():
-        return {"status": "ok"}
+    def health(request: Request):
+        from sqlalchemy import text
+        from database import engine
+        status = "ok"
+        db_ok = None
+        if request.query_params.get("db"):
+            try:
+                with engine.connect() as conn:
+                    conn.execute(text("SELECT 1"))
+                db_ok = True
+            except Exception:
+                db_ok = False
+                status = "db_unavailable"
+        return {"status": status, "database": db_ok}
 
     return app
 

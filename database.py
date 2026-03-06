@@ -9,9 +9,11 @@ from sqlalchemy.pool import QueuePool
 load_dotenv()
 
 _raw_url = os.getenv("DATABASE_URL", "mysql+pymysql://root:Touba123@localhost:3306/broderie_db")
-# Railway MySQL peut exposer mysql:// → convertir pour pymysql
+# Railway : MySQL expose MYSQL_URL ou DATABASE_URL ; PostgreSQL utilise postgresql://
 if _raw_url.startswith("mysql://") and "pymysql" not in _raw_url:
     _raw_url = _raw_url.replace("mysql://", "mysql+pymysql://", 1)
+# Si Railway fournit PostgreSQL, il faut utiliser le driver approprié (psycopg2)
+# DATABASE_URL = postgresql+psycopg2://...
 DATABASE_URL = _raw_url
 
 engine = create_engine(
