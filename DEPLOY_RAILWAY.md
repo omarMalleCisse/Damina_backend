@@ -37,11 +37,13 @@ Pour PayTech en production :
 
 ## 4. Base de données MySQL
 
-- **New** → **Database** → **MySQL**.
-- Railway crée une base et expose souvent `DATABASE_URL` ou `MYSQL_URL`. Si c’est `MYSQL_URL`, ajouter une variable dérivée ou utiliser le format attendu :  
-  `mysql+pymysql://user:password@host:port/railway`
-
-Vérifier que la variable utilisée par l’app s’appelle bien `DATABASE_URL` (ou adapter `config.py` / `database.py`).
+1. **New** → **Database** → **MySQL** → Railway crée le service MySQL.
+2. Dans le service MySQL, Railway expose notamment :
+   - `MYSQL_URL` = `mysql://${{MYSQLUSER}}:${{MYSQL_ROOT_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:3306/${{MYSQL_DATABASE}}` (réseau privé)
+   - `MYSQL_PUBLIC_URL` = `mysql://...@${{RAILWAY_TCP_PROXY_DOMAIN}}:${{RAILWAY_TCP_PROXY_PORT}}/...` (accès public)
+   - `MYSQLUSER`, `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`
+3. **Connecter MySQL au backend** : dans le service **backend** → **Variables** → **Add Variable Reference** → choisir le service **MySQL** → sélectionner **MYSQL_URL** (ou **MYSQL_PUBLIC_URL** si le backend n’est pas sur le même réseau privé).
+4. Le backend utilise en priorité : `DATABASE_URL` > `MYSQL_URL` > `MYSQL_PUBLIC_URL`, et convertit automatiquement `mysql://` en `mysql+pymysql://`.
 
 ## 5. Déploiement
 

@@ -8,8 +8,14 @@ from sqlalchemy.pool import QueuePool
 # Charger .env en local ; sur Railway les variables viennent de l'environnement
 load_dotenv()
 
-_raw_url = os.getenv("DATABASE_URL", "mysql+pymysql://root:Touba123@localhost:3306/broderie_db")
-# Railway : MySQL expose MYSQL_URL ou DATABASE_URL ; PostgreSQL utilise postgresql://
+# Railway MySQL : DATABASE_URL > MYSQL_URL > MYSQL_PUBLIC_URL (ordre de priorité)
+_raw_url = (
+    os.getenv("DATABASE_URL")
+    or os.getenv("MYSQL_URL")
+    or os.getenv("MYSQL_PUBLIC_URL")
+    or "mysql+pymysql://root:Touba123@localhost:3306/broderie_db"
+)
+# Convertir mysql:// en mysql+pymysql:// pour SQLAlchemy + PyMySQL
 if _raw_url.startswith("mysql://") and "pymysql" not in _raw_url:
     _raw_url = _raw_url.replace("mysql://", "mysql+pymysql://", 1)
 # Si Railway fournit PostgreSQL, il faut utiliser le driver approprié (psycopg2)
