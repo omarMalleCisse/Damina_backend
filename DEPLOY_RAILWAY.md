@@ -35,15 +35,17 @@ Pour PayTech en production :
 - `PAYTECH_IPN_URL` = `https://VOTRE-DOMAINE-RAILWAY.up.railway.app/api/payments/webhook`
 - `PAYTECH_SANDBOX` = `false`
 
-## 4. Base de données MySQL
+## 4. Connecter le backend (déjà en prod) à la BDD Railway
 
-1. **New** → **Database** → **MySQL** → Railway crée le service MySQL.
-2. Dans le service MySQL, Railway expose notamment :
-   - `MYSQL_URL` = `mysql://${{MYSQLUSER}}:${{MYSQL_ROOT_PASSWORD}}@${{RAILWAY_PRIVATE_DOMAIN}}:3306/${{MYSQL_DATABASE}}` (réseau privé)
-   - `MYSQL_PUBLIC_URL` = `mysql://...@${{RAILWAY_TCP_PROXY_DOMAIN}}:${{RAILWAY_TCP_PROXY_PORT}}/...` (accès public)
-   - `MYSQLUSER`, `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`
-3. **Connecter MySQL au backend** : dans le service **backend** → **Variables** → **Add Variable Reference** → choisir le service **MySQL** → sélectionner **MYSQL_URL** (ou **MYSQL_PUBLIC_URL** si le backend n’est pas sur le même réseau privé).
-4. Le backend utilise en priorité : `DATABASE_URL` > `MYSQL_URL` > `MYSQL_PUBLIC_URL`, et convertit automatiquement `mysql://` en `mysql+pymysql://`.
+Pour que ton **backend déjà déployé** sur Railway utilise la **base MySQL** du même projet :
+
+1. Ouvre ton **projet Railway** (celui où tourne le backend).
+2. **Ajoute MySQL** si besoin : **+ New** → **Database** → **MySQL**. Railway crée le service MySQL.
+3. **Donne la connexion au backend** : dans le service **backend** → **Variables** → **Add Variable Reference** → choisir le service **MySQL** → sélectionner **MYSQL_URL** (ou **MYSQL_PUBLIC_URL** si le backend n’est pas sur le même réseau privé).
+4. **Redéploie** le backend. Il utilisera alors la BDD Railway.
+5. **Vérif** : `GET https://ton-backend.up.railway.app/health?db=1` → la DB doit être OK.
+
+Le backend utilise : **`DATABASE_URL`** > **`MYSQL_URL`** > **`MYSQL_PUBLIC_URL`** et convertit `mysql://` en `mysql+pymysql://`. Aucun changement de code.
 
 ## 5. Déploiement
 

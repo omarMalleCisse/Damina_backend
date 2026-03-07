@@ -4,11 +4,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
 from pathlib import Path
+import logging
 
 # Imports absolus au lieu d'imports relatifs
 from routers import designs, categories, auth, users, downloads, packs, orders, pack_orders, features, payments, contact
 import config
 from database import create_all_tables
+
+logger = logging.getLogger("uvicorn.error")
 
 
 def create_app():
@@ -51,6 +54,17 @@ def create_app():
         safe_errors = _sanitize_validation_errors(exc.errors())
         return JSONResponse(status_code=422, content={"detail": safe_errors})
 
+    # Erreurs de connexion / base indisponible → 503 (ex. Railway sans MYSQL_URL)
+    from sqlalchemy.exc import OperationalError
+
+    @app.exception_handler(OperationalError)
+    async def db_operational_handler(request: Request, exc: Exception):
+        logger.warning("Database operational error: %s", exc)
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "database_unavailable", "message": "Service temporairement indisponible. Vérifiez la connexion à la base de données."},
+        )
+
     uploads_dir = Path(__file__).resolve().parent / "uploads"
     uploads_dir.mkdir(parents=True, exist_ok=True)
     (uploads_dir / "designs").mkdir(parents=True, exist_ok=True)
@@ -65,10 +79,10 @@ def create_app():
     def on_startup():
         try:
             create_all_tables()
+            logger.info("Base de données connectée et tables prêtes.")
         except Exception as e:
-            import logging
-            logging.getLogger("uvicorn.error").warning(
-                "Base de données indisponible au démarrage: %s. Vérifiez DATABASE_URL.", e
+            logger.warning(
+                "Base de données indisponible au démarrage: %s. Vérifiez MYSQL_URL / MYSQL_PUBLIC_URL sur Railway.", e
             )
 
     # Inclure les routers
