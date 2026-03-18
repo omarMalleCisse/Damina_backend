@@ -11,9 +11,9 @@ def seed():
     try:
         # Categories
         categories = [
-            {"name": "Floral", "icon": "flower.svg"},
-            {"name": "Animals", "icon": "animal.svg"},
-            {"name": "Seasonal", "icon": "season.svg"},
+            {"name": "Floral"},
+            {"name": "Animals"},
+            {"name": "Seasonal"},
         ]
         for c in categories:
             if not db.query(Category).filter_by(name=c["name"]).first():

@@ -75,7 +75,7 @@ def find_upload_in_form(form: Any, keys: Optional[List[str]] = None) -> Any:
     default_keys = (
         "photo", "photo_file", "file", "image", "image_file",
         "photo[]", "image[]", "photo_path", "photoPath", "photoFile",
-        "imagePath", "imageFile", "files", "upload", "icon",
+        "imagePath", "imageFile", "files", "upload",
     )
     keys = keys or default_keys
     file = form.get("photo") or form.get("photo_file") or form.get("file") or form.get("image")

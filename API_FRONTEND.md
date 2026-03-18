@@ -45,7 +45,7 @@ Authorization: Bearer <access_token>
   "downloads": "string | null",
   "image_path": "http://.../uploads/designs/xxx.jpg",
   "download_files": ["http://.../uploads/designs/files/xxx.dst", "http://.../uploads/designs/files/xxx.jef"],
-  "categories": [{ "id", "name", "icon" }]
+  "categories": [{ "id", "name" }]
 }
 ```
 
@@ -59,7 +59,7 @@ Authorization: Bearer <access_token>
 |--------|-----|------|--------|
 | GET | `/api/categories` | - | `[Category]` |
 | GET | `/api/categories/{category_id}` | - | `Category` |
-| POST | `/api/categories` | **multipart** : `name`, `icon` (fichier) ou `icon_url` | `Category` |
+| POST | `/api/categories` | **multipart** : `name` | `Category` |
 | PUT | `/api/categories/{category_id}` | multipart / JSON | `Category` |
 | DELETE | `/api/categories/{category_id}` | - | 204 |
 

@@ -21,7 +21,6 @@ class FilterResponse(BaseModel):
 class CategoryResponse(BaseModel):
     id: int
     name: str
-    icon: Optional[str] = None
 
     class Config:
         from_attributes = True
