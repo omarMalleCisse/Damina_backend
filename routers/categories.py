@@ -29,14 +29,31 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=schemas.CategoryResponse, status_code=status.HTTP_201_CREATED)
-def create_category(
-    name: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    """Créer une nouvelle catégorie."""
-    category_in = schemas.CategoryCreate(name=name)
-    category = crud.create_category(db, category_in)
-    return category
+async def create_category(request: Request, db: Session = Depends(get_db)):
+    """Créer une nouvelle catégorie (multipart/form-data ou JSON).
+
+    On accepte JSON pour éviter les 422 lors des scripts/migrations.
+    """
+    content_type = (request.headers.get("content-type") or "").lower()
+
+    name = None
+    if "multipart/form-data" in content_type or "application/x-www-form-urlencoded" in content_type:
+        form = await request.form()
+        name = form.get("name")
+    else:
+        # JSON: {"name": "..."} (on ignore volontairement d'éventuels champs en plus)
+        try:
+            body = await request.json()
+        except Exception:
+            body = None
+        if isinstance(body, dict):
+            name = body.get("name")
+
+    if name is None or str(name).strip() == "":
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Champ 'name' requis")
+
+    category_in = schemas.CategoryCreate(name=str(name).strip())
+    return crud.create_category(db, category_in)
 
 
 @router.put("/{category_id}", response_model=schemas.CategoryResponse)
